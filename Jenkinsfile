@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Clone repo') {
             steps {
-                git branch: 'main', url: ''
+                git branch: 'main', url: 'https://github.com/Gokulk-306/Jenkins-guvi.git'
             }
         }
 
