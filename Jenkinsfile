@@ -1,14 +1,10 @@
-// 1. Clone source code from github 
-// 2. build docker image from code
-// 3. Login to Dockerhub
-// 4. Push the image to dockerhub
-
 pipeline {
     agent any
+
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
         IMAGE_NAME = "gokulk306/jenkins_demo"
     }
+
     stages {
         stage('Clone repo') {
             steps {
@@ -18,24 +14,26 @@ pipeline {
 
         stage('Build Docker image') {
             steps {
-                script {
-                    sh 'docker build -t $IMAGE_NAME:latest .'
+                sh 'docker build -t $IMAGE_NAME:latest .'
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    '''
                 }
             }
         }
 
-         stage('Login to dockerhub') {
+        stage('Push image to Docker Hub') {
             steps {
-                script {
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                }
-            }
-        }
-
-        stage('Push image to dockerhub') {
-            steps {
-                script {
-                    sh 'docker push $IMAGE_NAME:latest'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                    docker push $IMAGE_NAME:latest
+                    '''
                 }
             }
         }
