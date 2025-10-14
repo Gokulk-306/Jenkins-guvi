@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "gokulk306/jenkins_demo"
+        IMAGE_NAME = "gokulk306/jenkins_task"
     }
 
     stages {
